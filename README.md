@@ -30,5 +30,11 @@ If the collection does not currently exist, insert operations create the collect
      $or: [ { qty: { $lt: 30 } }, { item: /^p/ } ]
    } )
 7. db.inventory.find( { "size.h": { $lt: 15 } } ) // Embedded documents
-8. 
+8. db.inventory.find( { tags: ["red", "blank"] } ) // for Array elements and maintains the order
+9. db.inventory.find( { tags: { $all: ["red", "blank"] } } ) // Doesn't maintain the order
+10. db.inventory.find( { dim_cm: { $gt: 15, $lt: 20 } } ) // Can satisfy any one of the conditions
+11. db.inventory.find( { dim_cm: { $elemMatch: { $gt: 22, $lt: 30 } } } ) // Has to satisfy both the conditions
+12. db.inventory.find( { "dim_cm.1": { $gt: 25 } } ) // queries for all documents where the second element in the array dim_cm is greater than 25
+13. db.inventory.find( { "tags": { $size: 3 } } ) // where tags has 3 elements
+14. 
 
