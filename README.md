@@ -20,8 +20,8 @@ If the collection does not currently exist, insert operations create the collect
    ])
 
 # Read operations
-1. db.inventory.find( { item: "canvas" } )
-2. db.inventory.find( {} )
+1. db.inventory.find( { item: "canvas" } ) // Returns particular documents
+2. db.inventory.find( {} ) // To fetch all the documents
 3. db.inventory.find( { status: { $in: [ "A", "D" ] } } ) // In operator
 4. db.inventory.find( { status: "A", qty: { $lt: 30 } } ) // AND operator
 5. db.inventory.find( { $or: [ { status: "A" }, { qty: { $lt: 30 } } ] } ) // OR operator
@@ -29,12 +29,36 @@ If the collection does not currently exist, insert operations create the collect
      status: "A",
      $or: [ { qty: { $lt: 30 } }, { item: /^p/ } ]
    } )
-7. db.inventory.find( { "size.h": { $lt: 15 } } ) // Embedded documents
-8. db.inventory.find( { tags: ["red", "blank"] } ) // for Array elements and maintains the order
-9. db.inventory.find( { tags: { $all: ["red", "blank"] } } ) // Doesn't maintain the order
-10. db.inventory.find( { dim_cm: { $gt: 15, $lt: 20 } } ) // Can satisfy any one of the conditions
-11. db.inventory.find( { dim_cm: { $elemMatch: { $gt: 22, $lt: 30 } } } ) // Has to satisfy both the conditions
-12. db.inventory.find( { "dim_cm.1": { $gt: 25 } } ) // queries for all documents where the second element in the array dim_cm is greater than 25
-13. db.inventory.find( { "tags": { $size: 3 } } ) // where tags has 3 elements
-14. 
-
+8. db.inventory.find( { "size.h": { $lt: 15 } } ) // Embedded documents
+9. db.inventory.find( { "size.h": { $lt: 15 }, "size.uom": "in", status: "D" } ) // AND condition in embedded documents
+10. db.inventory.find( { size: { h: 14, w: 21, uom: "cm" } } ) // For equality
+11. db.inventory.find( { tags: ["red", "blank"] } ) // for Array elements and maintains the order
+12. db.inventory.find( { tags: { $all: ["red", "blank"] } } ) // Doesn't maintain the order
+13. db.inventory.find( { dim_cm: { $gt: 15, $lt: 20 } } ) // Can satisfy any one of the conditions
+14. db.inventory.find( { dim_cm: { $elemMatch: { $gt: 22, $lt: 30 } } } ) // Has to satisfy both the conditions
+15. db.inventory.find( { "dim_cm.1": { $gt: 25 } } ) // queries for all documents where the second element in the array dim_cm is greater than 25
+16. db.inventory.find( { "tags": { $size: 3 } } ) // where tags has 3 elements
+17. db.inventory.find( { "instock": { warehouse: "A", qty: 5 } } ) // Fetching from array of embedded documents - order should be the same
+18. db.inventory.find( { 'instock.qty': { $lte: 20 } } ) // Fetching a particular field
+19. db.inventory.find( { 'instock.0.qty': { $lte: 20 } } ) // Fetching a partcular field of a particular index
+20. db.inventory.find( { "instock": { $elemMatch: { qty: 5, warehouse: "A" } } } ) // Has to satisfy both the conditions
+21. db.inventory.find( { "instock.qty": { $gt: 10,  $lte: 20 } } ) // either of the condition can satisfy
+22. db.inventory.find( { "instock.qty": 5, "instock.warehouse": "A" } ) // Checks for the equality
+23. db.inventory.find( { status: "A" }, { item: 1, status: 1 } ) // Returns the specified fields
+24. db.inventory.find( { status: "A" }, { item: 1, status: 1, _id: 0 } ) // Suppress the id field
+25. db.inventory.find( { status: "A" }, { status: 0, instock: 0 } ) // Return all but the excluded field
+26. db.inventory.find( // Return specific field in the embedded document
+   { status: "A" },
+   { item: 1, status: 1, "size.uom": 1 }
+   ) 
+27. db.inventory.find( // Suppress specific field in the embedded document
+   { status: "A" },
+   { "size.uom": 0 }
+   )
+28. db.inventory.find( { status: "A" }, { item: 1, status: 1, "instock.qty": 1 } ) // Projection of embedded document in an array
+29. db.inventory.find( { status: "A" }, { item: 1, status: 1, instock: { $slice: -1 } } ) // Returns the last element of instock array
+30. db.inventory.find( { item: null } ) // Returns the documents whose item value is null or doesn't have item value
+31. db.inventory.find( { item: { $ne : null } } ) // To query for field whose value exist and is not null
+32. db.inventory.find( { item : { $type: 10 } } ) // Returns the document whose item field has a value of null
+33. db.inventory.find( { item : { $exists: false } } ) // Returns the document where item field does not exist
+34. 
