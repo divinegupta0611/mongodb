@@ -81,19 +81,7 @@ If the collection does not currently exist, insert operations create the collect
    { item: "paper" },
    { item: "paper", instock: [ { warehouse: "A", qty: 60 }, { warehouse: "B", qty: 40 } ] }
    )
-4. db.students.updateOne(
-  { _id: 3 },
-  [
-    {
-      $set: {
-        test3: 98,           // add/update test3
-        modified: "$$NOW"    // set current timestamp
-      }
-    }
-  ]
-);
  
-
 # Remove Operations
 1. db.inventory.deleteMany({}) // Delete all the documents
 2. db.inventory.deleteMany({ status : "A" }) // Delete many documents with specified condition
