@@ -84,7 +84,7 @@ If the collection does not currently exist, insert operations create the collect
    { item: "paper", instock: [ { warehouse: "A", qty: 60 }, { warehouse: "B", qty: 40 } ] }
    )
  
-# Remove Operations
+# Delete Operations
 1. db.inventory.deleteMany({}) // Delete all the documents
 2. db.inventory.deleteMany({ status : "A" }) // Delete many documents with specified condition
 3. db.inventory.deleteOne( { status: "D" } ) // Delete one document with specified condition
