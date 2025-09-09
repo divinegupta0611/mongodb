@@ -61,4 +61,29 @@ If the collection does not currently exist, insert operations create the collect
 31. db.inventory.find( { item: { $ne : null } } ) // To query for field whose value exist and is not null
 32. db.inventory.find( { item : { $type: 10 } } ) // Returns the document whose item field has a value of null
 33. db.inventory.find( { item : { $exists: false } } ) // Returns the document where item field does not exist
-34. 
+
+# Update Operations
+1. db.inventory.updateOne( // Updates only one document 
+   { item: "paper" },
+   {
+     $set: { "size.uom": "cm", status: "P" },
+     $currentDate: { lastModified: true }
+   }
+   )
+2. db.inventory.updateMany(
+   { "qty": { $lt: 50 } },
+   {
+     $set: { "size.uom": "in", status: "P" },
+     $currentDate: { lastModified: true }
+   }
+   )
+3. db.inventory.replaceOne(
+   { item: "paper" },
+   { item: "paper", instock: [ { warehouse: "A", qty: 60 }, { warehouse: "B", qty: 40 } ] }
+   )
+4. db.students.updateOne( { _id: 3 }, [ { $set: { "test3": 98, modified: "$$NOW"} } ] ) // Aggregation pipeline
+
+# Remove Operations
+1. db.inventory.deleteMany({}) // Delete all the documents
+2. db.inventory.deleteMany({ status : "A" }) // Delete many documents with specified condition
+3. db.inventory.deleteOne( { status: "D" } ) // Delete one document with specified condition
