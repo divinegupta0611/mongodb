@@ -7,6 +7,8 @@ These commands are for mongodb shell
 2. Read
 3. Update
 4. Delete
+5. Indexes
+6. Data Modeling
 
 # Create/Insert operations
 If the collection does not currently exist, insert operations create the collection.
@@ -86,3 +88,76 @@ If the collection does not currently exist, insert operations create the collect
 1. db.inventory.deleteMany({}) // Delete all the documents
 2. db.inventory.deleteMany({ status : "A" }) // Delete many documents with specified condition
 3. db.inventory.deleteOne( { status: "D" } ) // Delete one document with specified condition
+
+# Indexes
+It allows MongoDB to quickly find documents without scanning the entire collection
+1. Single Field index
+   db.inventory.createIndex({ item: 1 }) // 1 = ascending
+   db.inventory.createIndex({ item: -1 }) // -1 = descending
+2.  db.inventory.getIndexes() // Check indexes in a collection
+3.  db.inventory.createIndex({ item: 1, qty: -1 }) // Compound Index
+4.  db.inventory.createIndex({ item: 1 }, { unique: true }) // Unique index
+5.  db.inventory.createIndex({ item: "text" }) // Text Index
+6.  db.inventory.find({ $text: { $search: "canvas" } }) // Find through text index
+7.  db.sessions.createIndex({ createdAt: 1 }, { expireAfterSeconds: 3600 }) // Time To Live Index - Automatically deletes documents after a certain time
+8.  db.inventory.createIndex({ item: "hashed" }) // Hashed Index - Distributes documents evenly across a sharded collection
+9.  Deleting indexes
+    db.inventory.dropIndex("item_1") // name of the index
+    db.inventory.dropIndexes()       // drop all indexes
+
+# Data Modeling
+1. Referenced Example
+   // Posts collection
+   db.posts.insertOne({ _id: 1, title: "MongoDB Guide", author: "Divine" })
+   
+   // Comments collection
+   db.comments.insertMany([
+     { postId: 1, user: "Alice", message: "Great post!" },
+     { postId: 1, user: "Bob", message: "Very helpful." }
+   ])
+
+   // Get post
+   db.posts.find({ _id: 1 })
+   // Get comments for a post
+   db.comments.find({ postId: 1 })
+   // Aggregate posts with comments
+   db.posts.aggregate([
+   {$match:{_id:1}},
+   {$lookup:{
+   from:'comments',
+   localField:'_id',
+   foreignField:'postId',
+   as:'comments'
+   }}
+   ])
+
+2. One to Many Relationship
+one parent entity has many child entities
+   db.users.insertOne({_id:1,name:'Alice'}) - Parent entity
+   db.orders.insertMany([ - Child Entity
+     { orderId: 101, userId: 1, product: "Laptop" },
+     { orderId: 102, userId: 1, product: "Mouse" }
+   ])
+
+3. Many to Many Relationship
+   // Students
+   db.students.insertOne({ _id: 1, name: "Alice", courseIds: [101, 102] })
+   
+   // Courses
+   db.courses.insertMany([
+     { _id: 101, name: "Math" },
+     { _id: 102, name: "Physics" }
+   ])
+   
+   // Query courses for a student
+   db.courses.find({ _id: { $in: [101, 102] } })
+
+   db.enrollments.insertMany([
+  { studentId: 1, courseId: 101 },
+  { studentId: 1, courseId: 102 }
+   ])
+   
+   // Query courses for student
+   db.enrollments.find({ studentId: 1 })
+
+
